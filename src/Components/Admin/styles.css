@@ -1,0 +1,11 @@
+.bodycontainer{
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border-width: 1px;
+    border-color: rgb(64,64,64,0.18);
+    border-radius: 10px;
+    border-style: solid;
+    width: fit-content;
+    padding: 10px;
+  }

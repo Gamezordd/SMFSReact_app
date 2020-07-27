@@ -1,0 +1,21 @@
+.bodycontainer{
+    border-style: solid;
+    border-width: 1px;
+    border-color: rgb(64,64,64,0.18);
+    border-radius: 10px;
+  }
+.filterBar{
+    border-radius: 10px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    height: 60px;
+    background-color: rgb(64,64,64,0.1);
+    margin-bottom: 20px;
+}
+.modalBackdrop {
+  height: 106vh;
+  width: 106vw;
+}
+@media only screen and (max-width: 800px) {
+
+}
