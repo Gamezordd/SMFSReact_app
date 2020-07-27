@@ -1,1 +1,1 @@
-export const logout_url = 'http://localhost:3000/admin/logout';
+export const logout_url = 'http://https://sm-fs-express.herokuapp.com/admin/logout';

@@ -1,1 +1,1 @@
-export const newPost_url = 'http://localhost:3000/internship/'
+export const newPost_url = 'http://https://sm-fs-express.herokuapp.com//internship/'
