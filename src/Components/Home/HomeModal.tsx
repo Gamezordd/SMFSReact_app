@@ -19,17 +19,17 @@ export const HomeModal = (props: IProps) =>{
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <div className="row" style={{paddingLeft: "16px"}}>
-                    <h4> {props.post.name} </h4>
+                <div className="row px-auto mx-auto" style={{paddingLeft: "16px"}}>
+                    <h4> {props.post.name} - </h4> <h5 className="pt-1" > {props.post.class} </h5>
                 </div>
-                <div className="row" style={{padding: "16px"}}>
+                <div className="row px-auto mx-auto" style={{padding: "16px"}}>
                     {props.post.details}
                 </div>
                 <div className="row" style={{padding: "10px"}}>
-                    <div className="col-6">
+                    <div className="col-md-6 col-xs-12">
                         <RenderPieChart pointsBreakup={props.post.pointsBreakup}/>
                     </div>
-                    <div className="col-6" style={{maxHeight:"250px", overflowY:"auto"}}>
+                    <div className="col-md-6 col-xs-12" style={{maxHeight:"250px", overflowY:"auto"}}>
                         <PointsList pointsBreakup={props.post.pointsBreakup} />
                     </div>
                 </div>

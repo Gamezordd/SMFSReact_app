@@ -1,0 +1,1 @@
+export const get_status_url = 'http://localhost:3000/'

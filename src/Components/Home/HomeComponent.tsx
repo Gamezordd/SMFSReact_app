@@ -20,6 +20,7 @@ interface IState {
     minPoints: number | null;
     maxPoints: number | null;
     isFilterModalOpen: boolean;
+    search_query: string | null;
 }
 
 export class Home extends React.Component<IProps, IState>{
@@ -32,7 +33,8 @@ export class Home extends React.Component<IProps, IState>{
             internClass: "Select",
             minPoints: null,
             maxPoints: null,
-            isFilterModalOpen: false
+            isFilterModalOpen: false,
+            search_query: null
         }
     }
 
@@ -70,9 +72,40 @@ export class Home extends React.Component<IProps, IState>{
                     }
                 }
             });
-            return this.setState({filteredPosts: posts});
+            if(!this.state.search_query){
+                return this.setState({filteredPosts: posts});
+            }
         }
-        else{
+
+        if(this.state.search_query && posts.length >0){
+            var newPosts: postType[] = [];
+            posts.map(post => {
+                const lowercaseName = post.name.toLowerCase();
+                if(this.state.search_query && lowercaseName.includes(this.state.search_query.toLowerCase())){
+                    console.log("adding name: ", lowercaseName);
+                    
+                    return newPosts = newPosts.concat(post);
+                }
+                return;
+            });
+            this.setState({filteredPosts: newPosts});
+        }
+        else if(this.state.search_query && this.state.posts){
+            // eslint-disable-next-line no-redeclare
+            var newPosts: postType[] = [];
+            this.state.posts.map(post => {
+                const lowercaseName = post.name.toLowerCase();
+                if(this.state.search_query && lowercaseName.includes(this.state.search_query.toLowerCase())){
+                    console.log("adding name: ", lowercaseName);
+                    
+                    return newPosts = newPosts.concat(post);
+                }
+                return;
+            });
+            this.setState({filteredPosts: newPosts});
+        }
+
+        if(!this.state.minPoints && !this.state.maxPoints && !this.state.search_query){
             return this.setState({filteredPosts: this.state.posts});
         }
     }
@@ -80,6 +113,26 @@ export class Home extends React.Component<IProps, IState>{
     handleChange = (e: any) =>{
         this.setState({...this.state, [e.target.id]: e.target.value})
     }    
+
+    setMobileViewHeight = () => {
+        if(window.innerHeight > 600 && window.innerHeight <= 680){
+            console.log("height: 81");
+            
+            return ("81vh");
+        }
+        else if(window.innerHeight > 680 && window.innerHeight <= 750){
+            console.log("height: 83");
+            return ("83vh");
+        }
+        else if(window.innerHeight > 750 && window.innerHeight <= 850){
+            console.log("height: 84");
+            return ("84vh");
+        }
+        else{
+            return("80vh")
+        }
+
+    }
 
     render(){
         const desktopFilterBar = (
@@ -116,13 +169,13 @@ export class Home extends React.Component<IProps, IState>{
         const mobileFilterBar = (
             <React.Fragment>
                 <div className="filterBar">
-                    <div style={{display:"flex", alignItems:"center", padding:"3%"}}>
+                    <div style={{display:"flex", alignItems:"center", padding:"2%"}}>
                         <Button onClick={() => {this.setState({isFilterModalOpen: true})}} variant="secondary">
                             <Filter width="25px" height="25px" />
                         </Button>
                     </div>
                 </div>
-                <Modal backdrop={window.innerWidth > 800 ? true : false} show={this.state.isFilterModalOpen} onHide={() => this.setState({isFilterModalOpen: false})}>
+                <Modal show={this.state.isFilterModalOpen} onHide={() => this.setState({isFilterModalOpen: false})}>
                     <Modal.Header closeButton>
                         <Modal.Title>Filter Results</Modal.Title>
                     </Modal.Header>
@@ -155,21 +208,56 @@ export class Home extends React.Component<IProps, IState>{
                 </Modal>
             </React.Fragment>
         );
+
+        const mobileBody= (
+            <React.Fragment>
+                <Row className="mx-auto" style={{height: this.setMobileViewHeight(), overflowY:"auto", width:"100%"}}>
+                    {this.state.filteredPosts && this.state.filteredPosts.map((post : postType) => {
+                        return(
+                            <CardComponent data={post}/> 
+                        );
+                    })}
+                </Row>
+            </React.Fragment>
+        );
+
+        const desktopBody = (
+            <React.Fragment>
+                <Row className="px-4">
+                    {this.state.filteredPosts && this.state.filteredPosts.map((post : postType) => {
+                        return(
+                            <CardComponent data={post}/> 
+                        );
+                    })}
+                </Row>
+            </React.Fragment>
+        )
+
+        const searchBar = (
+            <React.Fragment>
+                <Row className="justify-content-center" style={{width: "inherit"}}>
+                    <Col xs="9" md="11">
+                        <input id="search_query" className="searchBar align-items-center" onChange={this.handleChange} placeholder="Search by Name"/>
+                    </Col>
+                    <Col xs="2" md="1">
+                        <Button onClick={this.handleFilter} size="sm" className="align-items-center">Search</Button>
+                    </Col>
+                    
+                </Row>
+                
+            </React.Fragment>
+        )
         
         return(
             <React.Fragment>
                 <Container fluid className="container" style={{padding: (window.innerWidth > 800 ? undefined : 0)}}>
+                {searchBar}
                     <div style={{borderStyle:"solid", borderColor:"rgb(64,64,64,0.18)", borderWidth:"1px", borderRadius:"10px"}}>
-                        <Row>
-                            <Col>
-                            {window.innerWidth > 800 ? desktopFilterBar : mobileFilterBar}
-                            <Row style={{height:"80vh", overflowY:"auto"}} className="px-3">
-                                {this.state.filteredPosts && this.state.filteredPosts.map((post : postType) => {
-                                    return(
-                                        <CardComponent data={post}/> 
-                                    );
-                                })}
-                            </Row>
+                        <Row style={{width:"100%", padding:0, margin:0}}>
+                            <Col xs={12} style={{width:"100%", padding:0, margin:0}}>
+                                
+                                {window.innerWidth > 800 ? desktopFilterBar : mobileFilterBar}
+                                {window.innerWidth > 800 ? desktopBody : mobileBody}
                             </Col>
                             
                         </Row>  

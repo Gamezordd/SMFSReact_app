@@ -16,6 +16,16 @@
   height: 106vh;
   width: 106vw;
 }
-@media only screen and (max-width: 800px) {
 
+.searchBar {
+  width: inherit;
+  border-radius: 8px;
+  border-width: 1px;
+  margin-bottom: 10px;
+}
+
+.searchButton {
+  padding-bottom: 10px;
+  display: flex;
+  align-items: center;
 }

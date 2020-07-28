@@ -11,6 +11,7 @@ import { loginAction } from '../../redux/ActionCreators';
 interface IProps {
     login?: any;
     history?: any;
+    isSignup?:boolean
 }
 
 interface IState {
@@ -36,7 +37,7 @@ constructor(props: IProps){
     this.state={
         username: null,
         password: null,
-        isSignupForm: false,
+        isSignupForm: (this.props.isSignup ? this.props.isSignup : false),
         passwordError: false,
         usernameExists: false,
         badCredentials: false
@@ -67,6 +68,11 @@ async handleClick (action: string) {
         await axios.post(login_url,{
             username: this.state.username,
             password: this.state.password
+        },{
+            headers:{
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            }
         }).then(res => {
             if(res.data.success){
                 this.props.login(res.data.token);
@@ -82,10 +88,29 @@ async handleClick (action: string) {
         await axios.post(signup_url,{
             username: this.state.username,
             password: this.state.password
-        }).then(res => {
-            console.log("response: ", res);
+        }).then( async res => {
+            await axios.post(login_url,{
+                username: this.state.username,
+                password: this.state.password
+            },{
+                headers:{
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            }).then(res => {
+                if(res.data.success){
+                    this.props.login(res.data.token);
+                    this.props.history.push('/');
+                }
+                console.log("response:", res.data.token);
+            }).catch(err => {
+                if(err.response && err.response.status === 401){
+                    this.setState({badCredentials: true})
+                }
+            });
         }).catch(err => {
-            console.log("code: ", err.response.status);
+            console.log("error: ", err);
+            
             if(err.response && err.response.status === 409){
                 this.setState({usernameExists: true})
             }

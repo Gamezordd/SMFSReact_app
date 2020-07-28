@@ -1,6 +1,6 @@
 import React from 'react';
 import { Navbar, Nav, Dropdown } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { logoutAction } from '../../redux/ActionCreators';
 import { connect } from 'react-redux';
 import {GearFill} from 'react-bootstrap-icons'
@@ -24,8 +24,8 @@ const mapDispatchToProps = (dispatch: any) => ({
 
 const NavComponentBasic = (props: IProps) =>{
     console.log('login:', props.isLoggedIn );
-    
-    const handleClick = () =>{
+    var history = useHistory();
+    const handleSignOut = () =>{
         console.log("toke: ", props.jwt_token);
         
         Axios.get(logout_url, {
@@ -40,10 +40,13 @@ const NavComponentBasic = (props: IProps) =>{
             }
         });
     }
+    const handleNav = (route: string) =>{
+        return history.push(route);
+    }
     const buttons_loggedIn = (
         <div className="justify-content-end" style={{display: "flex", flexDirection: "row"}}>
-            <Nav.Link onClick={handleClick} ><Link to='/login'> Sign Out </Link></Nav.Link>
-            <Nav.Link><Link to='/admin'> Create Post </Link></Nav.Link>
+            <Nav.Link onClick={() => {handleSignOut(); handleNav('/admin');}}>Sign Out</Nav.Link>
+            <Nav.Link onClick={() => handleNav('/')}><Link to='/admin'> Create Post </Link></Nav.Link>
         </div>
     );
 
@@ -63,9 +66,20 @@ const NavComponentBasic = (props: IProps) =>{
                 <Dropdown drop="left">
                     <Dropdown.Toggle size="sm" variant="primary"> <GearFill/> </Dropdown.Toggle>
                     <Dropdown.Menu>
-                        <Dropdown.Item><Link to='/'>Home</Link></Dropdown.Item>
-                        <Dropdown.Item><Link to='/admin'>Create Post</Link> </Dropdown.Item>
-                        <Dropdown.Item onClick={handleClick}><Link to='/login'>Sign Out</Link></Dropdown.Item>
+                        {props.isLoggedIn ? 
+                            <React.Fragment>
+                                <Dropdown.Item onClick={() => handleNav('/')}>Home</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleNav('/admin')}>Create Post</Dropdown.Item>
+                                <Dropdown.Item onClick={() => {handleSignOut(); handleNav('/login')}}>Sign Out</Dropdown.Item> 
+                            </React.Fragment>
+                            :
+                            <React.Fragment>
+                                <Dropdown.Item onClick={() => handleNav('/login')}>Login</Dropdown.Item> 
+                                <Dropdown.Item onClick={() => handleNav('/register')}>Sign Up</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleNav('/')}>Home</Dropdown.Item>
+                            </React.Fragment>
+                        }
+                        
                     </Dropdown.Menu>
                 </Dropdown>
             </div>
@@ -73,9 +87,9 @@ const NavComponentBasic = (props: IProps) =>{
     )
     return(
         
-        <Navbar variant="dark" bg="dark" sticky="top" style={{height:"40px", marginBottom:"10px"}}>
+        <Navbar variant="dark" bg="dark" sticky="top" style={{height:"40px", marginBottom:(window.innerWidth > 600 ? "10px": 0)}}>
             <Navbar.Brand><Link to="/" style={{color: "#ffff"}}>Internships</Link></Navbar.Brand>
-            {window.innerWidth > 800 ?  <Nav.Link ><Link to="/">Home</Link></Nav.Link> : null}
+            {window.innerWidth > 800 ?  <Nav.Link onClick={() => handleNav('/')}>Home</Nav.Link> : null}
             <Navbar.Collapse className="justify-content-end">
                 {window.innerWidth > 800 ?  desktopNavbar : mobileNavbar}
             </Navbar.Collapse>
