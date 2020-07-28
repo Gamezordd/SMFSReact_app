@@ -1,8 +1,9 @@
 import React from 'react';
-import { Navbar, Nav } from 'react-bootstrap';
+import { Navbar, Nav, Dropdown } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import { logoutAction } from '../../redux/ActionCreators';
 import { connect } from 'react-redux';
+import {GearFill} from 'react-bootstrap-icons'
 import Axios from 'axios';
 
 import {logout_url} from './constants'
@@ -50,13 +51,33 @@ const NavComponentBasic = (props: IProps) =>{
         <Nav.Link className="justify-content-end"><Link to='/login'> Login </Link></Nav.Link>
     )
 
+    const desktopNavbar = (
+        <React.Fragment>
+            {props.isLoggedIn ? buttons_loggedIn : buttons_notloggedIn}
+        </React.Fragment>
+    );
+
+    const mobileNavbar = (
+        <React.Fragment>
+            <div>
+                <Dropdown drop="left">
+                    <Dropdown.Toggle size="sm" variant="primary"> <GearFill/> </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                        <Dropdown.Item><Link to='/'>Home</Link></Dropdown.Item>
+                        <Dropdown.Item><Link to='/admin'>Create Post</Link> </Dropdown.Item>
+                        <Dropdown.Item onClick={handleClick}><Link to='/login'>Sign Out</Link></Dropdown.Item>
+                    </Dropdown.Menu>
+                </Dropdown>
+            </div>
+        </React.Fragment>
+    )
     return(
         
-        <Navbar bg="light" sticky="top" style={{height:"40px", marginBottom:"10px"}}>
-            <Navbar.Brand>Internships</Navbar.Brand>
-            <Nav.Link><Link to="/">Home</Link></Nav.Link>
+        <Navbar variant="dark" bg="dark" sticky="top" style={{height:"40px", marginBottom:"10px"}}>
+            <Navbar.Brand><Link to="/" style={{color: "#ffff"}}>Internships</Link></Navbar.Brand>
+            {window.innerWidth > 800 ?  <Nav.Link ><Link to="/">Home</Link></Nav.Link> : null}
             <Navbar.Collapse className="justify-content-end">
-                {props.isLoggedIn ? buttons_loggedIn : buttons_notloggedIn}
+                {window.innerWidth > 800 ?  desktopNavbar : mobileNavbar}
             </Navbar.Collapse>
             
         </Navbar>
