@@ -1,7 +1,7 @@
 import React from 'react';
 import Axios from 'axios';
 import { Form, Container, Button, Table, Dropdown } from 'react-bootstrap';
-import {newPost_url} from './constants';
+import {newPost_url} from '../routes';
 
 import './styles.css'
 import { connect } from 'react-redux';
@@ -18,7 +18,7 @@ interface IState {
     breakup: {category: string, points: number}[];
     newCat: boolean;
     new_cat: string;
-    new_points: number;
+    new_points: string;
     submission_success: boolean;
 }
 
@@ -34,7 +34,7 @@ const initialState = {
     breakup: [],
     newCat: false,
     new_cat: '',
-    new_points: 0,
+    new_points: '',
 }
 
 class AdminBasic extends React.Component<IProps, IState>{
@@ -46,16 +46,23 @@ class AdminBasic extends React.Component<IProps, IState>{
         }
     }
 
-    handleChange = (e:any) =>{
+    handleChange = (e:{target:{id: string, value: string}}) =>{
+        console.log("points: ", this.state.new_points);
+        console.log("val: ", e.target.value);
+        
+        if((e.target.id === "new_points") && ((!/[0-9]/.test(e.target.value.slice(e.target.value.length -1, e.target.value.length)))?!(e.target.value === '') : (e.target.value === ''))){
+            return;
+        }
         this.setState({...this.state, [e.target.id]: e.target.value, submission_success: false});
     }
 
     handleCategoryAdd = () =>{
-        if(this.state.new_cat === '' && this.state.new_points ===0){
+        if(this.state.new_cat === '' && this.state.new_points ==='0'){
             return this.setState({newCat: false})
         }
-        this.setState({breakup: this.state.breakup.concat({category: this.state.new_cat, points: this.state.new_points})});
-        this.setState({new_cat:'', new_points: 0, newCat: false})
+        if(this.state.new_points)
+        this.setState({breakup: this.state.breakup.concat({category: this.state.new_cat, points: parseInt(this.state.new_points)})});
+        this.setState({new_cat:'', new_points: '', newCat: false})
     }
 
     handleDropdown = (k: any, e: any) =>{
@@ -78,7 +85,7 @@ class AdminBasic extends React.Component<IProps, IState>{
             method:"POST"
         }).then(res => {
             console.log("response: ", res);
-            this.setState({...initialState, submission_success: true})
+            this.setState({...initialState,submission_success: true})
         }).catch(err => {
             console.log("error: ", err);
         })
@@ -87,8 +94,8 @@ class AdminBasic extends React.Component<IProps, IState>{
     render(){
         const addCategory = (
             <div className="row">
-                <input onChange={this.handleChange} placeholder="Category" style={{marginLeft:"10px", marginRight:"10px"}} className="col-md-6 col-xs-10" id="new_cat"/>
-                <input onChange={this.handleChange} placeholder="Points" style={{margin:"10px"}} className="col-md-6 col-xs-10" id="new_points"/>
+                <input onChange={this.handleChange} value={this.state.new_cat} placeholder="Category" style={{marginLeft:"10px", marginRight:"10px"}} className="col-md-6 col-xs-10" id="new_cat"/>
+                <input onChange={this.handleChange} value={this.state.new_points ? this.state.new_points : ''} placeholder="Points" style={{margin:"10px"}} className="col-md-6 col-xs-10" id="new_points"/>
             </div>
         )
 
@@ -96,7 +103,7 @@ class AdminBasic extends React.Component<IProps, IState>{
             <Form>
                 <Form.Group>
                     <Form.Label> Title: </Form.Label>
-                    <Form.Control id="name" onChange={this.handleChange}/>
+                    <Form.Control value={this.state.name} id="name" onChange={this.handleChange}/>
                 </Form.Group>
                 <Form.Group>
                     <Form.Label> Type: </Form.Label>
@@ -112,11 +119,11 @@ class AdminBasic extends React.Component<IProps, IState>{
                 </Form.Group>
                 <Form.Group>
                     <Form.Label> Company: </Form.Label>
-                    <Form.Control id="company" onChange={this.handleChange}/>
+                    <Form.Control value={this.state.company} id="company" onChange={this.handleChange}/>
                 </Form.Group>
                 <Form.Group>
                     <Form.Label> Details: </Form.Label>
-                    <Form.Control as="textarea" rows={10} id="details" onChange={this.handleChange}/>
+                    <Form.Control value={this.state.details} as="textarea" rows={10} id="details" onChange={this.handleChange}/>
                 </Form.Group>
                 <Form.Group>
                     <Form.Label>Breakup:</Form.Label>

@@ -41,7 +41,7 @@ export const CardComponent = (props: IProps) => {
                                 <Card.Title> {props.data.name} - {props.data.company} </Card.Title>
                                 <Card.Subtitle className="text-muted mb-2"> {props.data.class} </Card.Subtitle>
                             </div>
-                            <Card.Text><Button>Apply</Button></Card.Text>
+                            <Card.Text><Button onClick={() => toggleModal(true)}>Apply</Button></Card.Text>
                         </Card.Body>                                        
                     </Card>
             </Col>

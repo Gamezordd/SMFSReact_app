@@ -1,1 +1,0 @@
-export const newPost_url = 'http://localhost:3000/internship/'

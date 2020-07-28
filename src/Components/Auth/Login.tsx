@@ -2,7 +2,7 @@ import React from 'react';
 import { Container, Form, Button } from 'react-bootstrap';
 import axios from 'axios';
 
-import {login_url, signup_url} from './constants';
+import {login_url, signup_url} from '../routes';
 
 import './styles.css';
 import { connect } from 'react-redux';

@@ -1,8 +1,9 @@
 import React from 'react';
 import {Container, Row, FormControl, Dropdown, Col, Button, Modal, Form} from 'react-bootstrap';
-import {fetchPosts_url} from './constants';
+import {fetchPosts_url} from '../routes';
 import {CardComponent} from './CardComponent';
-import { Filter } from 'react-bootstrap-icons'
+import { Filter } from 'react-bootstrap-icons';
+import _ from 'lodash';
 
 import './styles.css';
 
@@ -14,13 +15,14 @@ interface IProps {
 
 interface IState {
     isLoading: boolean;
-    posts: [postType] | null;
+    posts: postType[] | null;
     filteredPosts: postType[] | null;
     internClass: string;
     minPoints: number | null;
     maxPoints: number | null;
     isFilterModalOpen: boolean;
     search_query: string | null;
+    debouncedFilter: () => void;
 }
 
 export class Home extends React.Component<IProps, IState>{
@@ -34,7 +36,8 @@ export class Home extends React.Component<IProps, IState>{
             minPoints: null,
             maxPoints: null,
             isFilterModalOpen: false,
-            search_query: null
+            search_query: null,
+            debouncedFilter: _.debounce(this.handleFilter, 600)
         }
     }
 
@@ -49,65 +52,54 @@ export class Home extends React.Component<IProps, IState>{
 
     handleTypeSelect = (key: any, e:any) => {
         if(this.state.posts && e && this.state.posts.length > 0){
-            this.setState({ filteredPosts: this.state.posts?.filter((post) => post.class === e.target.text), internClass: e.target.text});
+            //this.setState({ filteredPosts: this.state.posts?.filter((post) => post.class === e.target.text), internClass: e.target.text});
+            this.setState({internClass: e.target.text});
         }
         return;
     }
 
     handleFilter = () =>{
-        var posts: postType[] = [];
-        if((this.state.minPoints || this.state.maxPoints) && this.state.posts && this.state.posts.length > 0){
-            this.state.posts.map((post) => {
+        var posts = this.state.posts;
+        if(posts && this.state.internClass !== 'Select'){
+            let tempArr: postType[] = [];
+            posts.forEach(post =>{
+                if(post.class === this.state.internClass){
+                    tempArr = tempArr.concat(post);
+                }
+            });
+            posts = tempArr;
+        }
+        
+        if((this.state.minPoints || this.state.maxPoints) && posts){
+            let tempArr: postType[] = [];
+            posts.forEach((post) => {
                 if(post.pointsBreakup.length > 0){
                     var summation = 0;
                     post.pointsBreakup.forEach(obj => (summation = summation + obj.points));
-                    if(this.state.minPoints && this.state.maxPoints && summation >= this.state.minPoints && summation <= this.state.maxPoints){
-                        return posts = posts.concat(post);
+                    if(this.state.minPoints && this.state.maxPoints && summation >= this.state.minPoints && summation <= this.state.maxPoints && posts){
+                        return tempArr = tempArr.concat(post);
                     }
-                    else if(this.state.minPoints && !this.state.maxPoints && summation >= this.state.minPoints){
-                        return posts = posts.concat(post);
+                    else if(this.state.minPoints && !this.state.maxPoints && summation >= this.state.minPoints && posts){
+                        return tempArr = tempArr.concat(post);
                     }
-                    else if(this.state.maxPoints && !this.state.minPoints && summation <= this.state.maxPoints){
-                        return posts = posts.concat(post);
+                    else if(this.state.maxPoints && !this.state.minPoints && summation <= this.state.maxPoints && posts){
+                        return tempArr = tempArr.concat(post);
                     }
                 }
             });
-            if(!this.state.search_query){
-                return this.setState({filteredPosts: posts});
-            }
+            posts = tempArr;
         }
 
-        if(this.state.search_query && posts.length >0){
-            var newPosts: postType[] = [];
-            posts.map(post => {
-                const lowercaseName = post.name.toLowerCase();
-                if(this.state.search_query && lowercaseName.includes(this.state.search_query.toLowerCase())){
-                    console.log("adding name: ", lowercaseName);
-                    
-                    return newPosts = newPosts.concat(post);
+        if(posts && this.state.search_query && this.state.search_query.length >0){
+            let tempArr: postType[] = [];
+            posts.forEach(post => {
+                if(this.state.search_query &&post.name.toLowerCase().includes(this.state.search_query.toLowerCase())){
+                    tempArr = tempArr.concat(post);
                 }
-                return;
-            });
-            this.setState({filteredPosts: newPosts});
+            })
+            posts = tempArr;
         }
-        else if(this.state.search_query && this.state.posts){
-            // eslint-disable-next-line no-redeclare
-            var newPosts: postType[] = [];
-            this.state.posts.map(post => {
-                const lowercaseName = post.name.toLowerCase();
-                if(this.state.search_query && lowercaseName.includes(this.state.search_query.toLowerCase())){
-                    console.log("adding name: ", lowercaseName);
-                    
-                    return newPosts = newPosts.concat(post);
-                }
-                return;
-            });
-            this.setState({filteredPosts: newPosts});
-        }
-
-        if(!this.state.minPoints && !this.state.maxPoints && !this.state.search_query){
-            return this.setState({filteredPosts: this.state.posts});
-        }
+        this.setState({filteredPosts: posts})
     }
 
     handleChange = (e: any) =>{
@@ -116,20 +108,16 @@ export class Home extends React.Component<IProps, IState>{
 
     setMobileViewHeight = () => {
         if(window.innerHeight > 600 && window.innerHeight <= 680){
-            console.log("height: 81");
-            
-            return ("81vh");
+            return ("69vh");
         }
         else if(window.innerHeight > 680 && window.innerHeight <= 750){
-            console.log("height: 83");
-            return ("83vh");
+            return ("72vh");
         }
         else if(window.innerHeight > 750 && window.innerHeight <= 850){
-            console.log("height: 84");
-            return ("84vh");
+            return ("75vh");
         }
         else{
-            return("80vh")
+            return("76vh")
         }
 
     }
@@ -156,8 +144,9 @@ export class Home extends React.Component<IProps, IState>{
                                     {this.state.internClass}
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu>
-                                    <Dropdown.Item eventKey="1" onSelect={this.handleTypeSelect}>Technical</Dropdown.Item>
-                                    <Dropdown.Item eventKey="2" onSelect={this.handleTypeSelect}>Non-Technical</Dropdown.Item>
+                                    <Dropdown.Item eventKey="3" onSelect={(k,e) => {this.handleTypeSelect(k,e); this.state.debouncedFilter();}}>Select</Dropdown.Item>
+                                    <Dropdown.Item eventKey="1" onSelect={(k,e) => {this.handleTypeSelect(k,e); this.state.debouncedFilter();}}>Technical</Dropdown.Item>
+                                    <Dropdown.Item eventKey="2" onSelect={(k,e) => {this.handleTypeSelect(k,e); this.state.debouncedFilter();}}>Non-Technical</Dropdown.Item>
                                 </Dropdown.Menu>
                             </Dropdown>
                         </div>
@@ -235,14 +224,10 @@ export class Home extends React.Component<IProps, IState>{
 
         const searchBar = (
             <React.Fragment>
-                <Row className="justify-content-center" style={{width: "inherit"}}>
-                    <Col xs="9" md="11">
-                        <input id="search_query" className="searchBar align-items-center" onChange={this.handleChange} placeholder="Search by Name"/>
-                    </Col>
-                    <Col xs="2" md="1">
-                        <Button onClick={this.handleFilter} size="sm" className="align-items-center">Search</Button>
-                    </Col>
-                    
+                <Row className="p-0 m-0 justify-content-center">
+                    <Col xs="11" md="12" className="p-0 m-0 ">
+                        <input style={{height:"50px", fontSize:"35px", textAlign:"center"}} id="search_query" className="searchBar align-items-center" onChange={(e) => {this.handleChange(e); this.state.debouncedFilter();}} placeholder="Search by Name"/>
+                    </Col>                    
                 </Row>
                 
             </React.Fragment>

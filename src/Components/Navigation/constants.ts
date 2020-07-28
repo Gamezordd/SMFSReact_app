@@ -1,1 +1,0 @@
-export const logout_url = 'http://localhost:3000/admin/logout';

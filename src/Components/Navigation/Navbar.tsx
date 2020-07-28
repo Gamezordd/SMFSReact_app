@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import {GearFill} from 'react-bootstrap-icons'
 import Axios from 'axios';
 
-import {logout_url} from './constants'
+import {logout_url} from '../routes';
 
 interface IProps {
     isLoggedIn?: boolean;
@@ -46,13 +46,16 @@ const NavComponentBasic = (props: IProps) =>{
     }
     const buttons_loggedIn = (
         <div className="justify-content-end" style={{display: "flex", flexDirection: "row"}}>
-            <Nav.Link onClick={() => {handleSignOut(); handleNav('/admin');}}>Sign Out</Nav.Link>
-            <Nav.Link onClick={() => handleNav('/')}><Link to='/admin'> Create Post </Link></Nav.Link>
+            <Nav.Link onClick={() => {handleSignOut(); handleNav('/SMFSReact_app/admin');}}>Sign Out</Nav.Link>
+            <Nav.Link onClick={() => handleNav('/SMFSReact_app/admin')}>Create Post </Nav.Link>
         </div>
     );
 
     const buttons_notloggedIn = (
-        <Nav.Link className="justify-content-end"><Link to='/login'> Login </Link></Nav.Link>
+        <div style={{display:"flex", flexDirection:"row"}}>
+            <Nav.Link onClick={() => handleNav('/SMFSReact_app/register')} className="justify-content-end"> Signup </Nav.Link>
+            <Nav.Link onClick={() => handleNav('/SMFSReact_app/login')} className="justify-content-end"> Login </Nav.Link>
+        </div>
     )
 
     const desktopNavbar = (
@@ -69,15 +72,15 @@ const NavComponentBasic = (props: IProps) =>{
                     <Dropdown.Menu>
                         {props.isLoggedIn ? 
                             <React.Fragment>
-                                <Dropdown.Item onClick={() => handleNav('/')}>Home</Dropdown.Item>
-                                <Dropdown.Item onClick={() => handleNav('/admin')}>Create Post</Dropdown.Item>
-                                <Dropdown.Item onClick={() => {handleSignOut(); handleNav('/login')}}>Sign Out</Dropdown.Item> 
+                                <Dropdown.Item onClick={() => handleNav('/SMFSReact_app/')}>Home</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleNav('/SMFSReact_app/admin')}>Create Post</Dropdown.Item>
+                                <Dropdown.Item onClick={() => {handleSignOut(); handleNav('/SMFSReact_app/login')}}>Sign Out</Dropdown.Item> 
                             </React.Fragment>
                             :
                             <React.Fragment>
-                                <Dropdown.Item onClick={() => handleNav('/login')}>Login</Dropdown.Item> 
-                                <Dropdown.Item onClick={() => handleNav('/register')}>Sign Up</Dropdown.Item>
-                                <Dropdown.Item onClick={() => handleNav('/')}>Home</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleNav('/SMFSReact_app/login')}>Login</Dropdown.Item> 
+                                <Dropdown.Item onClick={() => handleNav('/SMFSReact_app/register')}>Sign Up</Dropdown.Item>
+                                <Dropdown.Item onClick={() => handleNav('/SMFSReact_app/')}>Home</Dropdown.Item>
                             </React.Fragment>
                         }
                         
@@ -88,9 +91,9 @@ const NavComponentBasic = (props: IProps) =>{
     )
     return(
         
-        <Navbar variant="dark" bg="dark" sticky="top" style={{height:"40px", marginBottom:(window.innerWidth > 600 ? "10px": 0)}}>
-            <Navbar.Brand><Link to="/" style={{color: "#ffff"}}>Internships</Link></Navbar.Brand>
-            {window.innerWidth > 800 ?  <Nav.Link onClick={() => handleNav('/')}>Home</Nav.Link> : null}
+        <Navbar variant="dark" bg="dark" sticky="top" style={{height:"40px", marginBottom:"10px"}}>
+            <Navbar.Brand><Link to="/SMFSReact_app/" style={{color: "#ffff"}}>Internships</Link></Navbar.Brand>
+            {window.innerWidth > 800 ?  <Nav.Link onClick={() => handleNav('/SMFSReact_app/')}>Home</Nav.Link> : null}
             <Navbar.Collapse className="justify-content-end">
                 {window.innerWidth > 800 ?  desktopNavbar : mobileNavbar}
             </Navbar.Collapse>
