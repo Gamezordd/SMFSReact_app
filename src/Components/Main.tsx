@@ -28,10 +28,12 @@ interface IProps {
 
 const MainBasic = (props: IProps) => {
 
-    /*useEffect(() => {
+    useEffect(() => {
         if(!props.isLoggedIn){
             console.log("trying to log in");
-            Axios.get(get_status_url).then(res => {
+            Axios.get(get_status_url,{
+                withCredentials:true
+            }).then(res => {
                 props.login(res.data.token);
                 console.log("logged in");
                 
@@ -39,7 +41,7 @@ const MainBasic = (props: IProps) => {
                 console.error(err);
             })
         }
-    });*/
+    });
     
     var history = useHistory();
     console.log("path:" , history.location.pathname);

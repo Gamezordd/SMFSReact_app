@@ -31,7 +31,8 @@ const NavComponentBasic = (props: IProps) =>{
         Axios.get(logout_url, {
             headers:{
                 'Authorization': `bearer ${props.jwt_token}`
-            }
+            },
+            withCredentials: true,
         }).then(res => {
             console.log("response: ", res.data);
             

@@ -69,10 +69,8 @@ async handleClick (action: string) {
             username: this.state.username,
             password: this.state.password
         },{
-            headers:{
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            }
+            headers:{"Access-Control-Allow-Credentials": "true"},
+            withCredentials: true,
         }).then(res => {
             if(res.data.success){
                 this.props.login(res.data.token);
@@ -88,7 +86,7 @@ async handleClick (action: string) {
         await axios.post(signup_url,{
             username: this.state.username,
             password: this.state.password
-        }).then( async res => {
+        },{withCredentials: true}).then( async res => {
             await axios.post(login_url,{
                 username: this.state.username,
                 password: this.state.password
@@ -96,7 +94,8 @@ async handleClick (action: string) {
                 headers:{
                     Accept: 'application/json',
                     'Content-Type': 'application/json',
-                }
+                },
+                withCredentials: true,
             }).then(res => {
                 if(res.data.success){
                     this.props.login(res.data.token);
