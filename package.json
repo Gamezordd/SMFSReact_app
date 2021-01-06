@@ -22,7 +22,7 @@
     "@types/react-router-dom": "^5.1.5",
     "@types/recompose": "^0.30.7",
     "@types/styled-components": "^5.1.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "bootstrap": "^4.5.0",
     "lodash": "^4.17.19",
     "react": "^16.13.1",
